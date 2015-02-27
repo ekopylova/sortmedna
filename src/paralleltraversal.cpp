@@ -1731,6 +1731,23 @@ paralleltraversal ( char* inputreads,
   // the number of lines to offset at the top of the current
   // file section
   int32_t offset_pair_from_top = 0;
+
+  // memory buffer to store the reference sequence database
+  char* buffer = NULL;
+  // pointer to start of each sequence in buffer
+  char** reference_seq = NULL;
+  // length of each sequence in buffer
+  uint32_t* reference_seq_len = NULL;
+  // 9-mer look-up tables
+  kmer *lookup_tbl = NULL;
+  // 19-mer position look-up tables
+  kmer_origin* positions_tbl = NULL;
+  // number of elements in the table
+  uint32_t number_elements = 0;
+
+  uint64_t seq_part_size;
+  uint32_t numseq_part;
+  uint64_t start_part;
         
   // Loop through all mmap'd read file sections
   while ( file_s < file_sections )
@@ -2173,63 +2190,64 @@ paralleltraversal ( char* inputreads,
       // for each partial file of burst trie index (part_0 .. part_x)
       for ( part = 0; part < num_index_parts[index_num]; part++ )
       {
-        eprintf("    Loading index part %d/%u ... ",part+1,num_index_parts[index_num] );
-                
-        TIME(s);
-                
-        // memory buffer to store the reference sequence database
-        char* buffer = NULL;
-        // pointer to start of each sequence in buffer
-        char** reference_seq = NULL;
-        // length of each sequence in buffer
-        uint32_t* reference_seq_len = NULL;
-        // 9-mer look-up tables
-        kmer *lookup_tbl = NULL;
-        // 19-mer position look-up tables
-        kmer_origin* positions_tbl = NULL;
-        // number of elements in the table
-        uint32_t number_elements = 0;
-                
-        uint64_t seq_part_size = index_parts_stats_vec[index_num][part].seq_part_size;
-        uint32_t numseq_part = index_parts_stats_vec[index_num][part].numseq_part;
-        uint64_t start_part = index_parts_stats_vec[index_num][part].start_part;
-                
-#pragma omp master
+        // load index every mmap'd file section if there are multiple references
+        // or index is split into multiple parts, or load index only once on
+        // the first memory map if only one reference exists and it's
+        // contained in one part
+        if ( (((uint16_t)myfiles.size() > 1) || (num_index_parts[index_num] > 1)) ||
+             (((uint16_t)myfiles.size() == 1) && (num_index_parts[index_num] == 1) && (file_s == 0)) )
         {
-          // 2. load the index part (9-mer lookup table, mini-burst tries and positions table)
-          load_index((char*)(myfiles[index_num].second).c_str(), part_str, lookup_tbl, positions_tbl, number_elements, lnwin[index_num] );
-                    
-          // block of memory to hold all ids + reference sequences
-          buffer = new char[(seq_part_size+1)]();
-          if ( buffer == NULL )
+          eprintf("    Loading index part %d/%u ... ",part+1,num_index_parts[index_num] );
+                
+          TIME(s);
+
+          seq_part_size = index_parts_stats_vec[index_num][part].seq_part_size;
+          numseq_part = index_parts_stats_vec[index_num][part].numseq_part;
+          start_part = index_parts_stats_vec[index_num][part].start_part;
+
+#pragma omp master
           {
-            fprintf(stderr,"    %sERROR%s: could not allocate memory for reference sequence buffer (paralleltraversal.cpp)\n","\033[0;31m","\033[0m");
-            exit(EXIT_FAILURE);
+            // 2. load the index part (9-mer lookup table, mini-burst tries and positions table)
+            load_index((char*)(myfiles[index_num].second).c_str(), part_str,\
+              lookup_tbl, positions_tbl, number_elements, lnwin[index_num] );
+                      
+            // block of memory to hold all ids + reference sequences
+            buffer = new char[(seq_part_size+1)]();
+            if ( buffer == NULL )
+            {
+              fprintf(stderr,"    %sERROR%s: could not allocate memory for reference sequence "
+                             "buffer (paralleltraversal.cpp)\n","\033[0;31m","\033[0m");
+              exit(EXIT_FAILURE);
+            }
+                      
+            // pointer to the start of every sequence in the buffer
+            reference_seq = new char*[(numseq_part<<1)]();
+            if ( reference_seq == NULL )
+            {
+              fprintf(stderr,"    %sERROR%s: could not allocate memory for reference_seq "
+                             "(paralleltraversal.cpp)\n","\033[0;31m","\033[0m");
+              exit(EXIT_FAILURE);
+            }
+                      
+            // length of every sequence in the buffer
+            reference_seq_len = new uint32_t[numseq_part]();
+            if ( reference_seq_len == NULL )
+            {
+              fprintf(stderr,"    %sERROR%s: could not allocate memory for reference_seq_len "
+                             "(paralleltraversal.cpp)\n","\033[0;31m","\033[0m");
+              exit(EXIT_FAILURE);
+            }
+                      
+            // load the reference sequences for SW alignment
+            load_ref((char*)(myfiles[index_num].first).c_str(),buffer,reference_seq,\
+              reference_seq_len,seq_part_size,numseq_part,start_part,1);
+
+            TIME(f);
+                
+            eprintf(" done [%.2f sec]\n",(f-s) );
           }
-                    
-          // pointer to the start of every sequence in the buffer
-          reference_seq = new char*[(numseq_part<<1)]();
-          if ( reference_seq == NULL )
-          {
-            fprintf(stderr,"    %sERROR%s: could not allocate memory for reference_seq (paralleltraversal.cpp)\n","\033[0;31m","\033[0m");
-            exit(EXIT_FAILURE);
-          }
-                    
-          // length of every sequence in the buffer
-          reference_seq_len = new uint32_t[numseq_part]();
-          if ( reference_seq_len == NULL )
-          {
-            fprintf(stderr,"    %sERROR%s: could not allocate memory for reference_seq_len (paralleltraversal.cpp)\n","\033[0;31m","\033[0m");
-            exit(EXIT_FAILURE);
-          }
-                    
-          // load the reference sequences for SW alignment
-          load_ref((char*)(myfiles[index_num].first).c_str(),buffer,reference_seq,reference_seq_len,seq_part_size,numseq_part,start_part,1);
         }
-        TIME(f);
-                
-        eprintf(" done [%.2f sec]\n",(f-s) );
-                
+  
         eprintf("    Begin index search ... ");
                       
         // begin the parallel traversal
@@ -3578,68 +3596,76 @@ paralleltraversal ( char* inputreads,
         TIME(f);
         eprintf(" done [%.2f sec]\n", (f-s) );
         
-        eprintf("    Freeing index ... ");
-        
-        
-        TIME(s);
-#pragma omp master
+        // free index if multiple references or multiple parts
+        // per reference exist, or free index if only one reference
+        // exists in one part on the last mmap'd file section
+        if ( (((uint16_t)myfiles.size() > 1) || (num_index_parts[index_num] > 1)) ||
+             (((uint16_t)myfiles.size() == 1) && (num_index_parts[index_num] == 1) && (file_s == file_sections-1)) )
         {
-          // free the positions table
-          if ( positions_tbl != NULL )
+          eprintf("    Freeing index ... ");
+          TIME(s);
+#pragma omp master
           {
-            for ( uint32_t i = 0; i < number_elements; i++ )
+            // free the positions table
+            if ( positions_tbl != NULL )
             {
-                if ( positions_tbl[i].arr != NULL )
+              for ( uint32_t i = 0; i < number_elements; i++ )
+              {
+                  if ( positions_tbl[i].arr != NULL )
+                  {
+                    delete [] positions_tbl[i].arr;
+                    positions_tbl[i].arr = NULL;
+                  }
+              }
+              delete [] positions_tbl;
+              positions_tbl = NULL;
+            }
+
+            // reset number of elements
+            number_elements = 0;
+            
+            // free reference sequences loaded into memory
+            if ( buffer != NULL )
+            {
+              delete [] buffer;
+              buffer = NULL;
+            }
+            if ( reference_seq != NULL )
+            {
+              delete [] reference_seq;
+              reference_seq = NULL;
+            }
+            if ( reference_seq_len != NULL )
+            {
+              delete [] reference_seq_len;
+              reference_seq_len = NULL;
+            }
+                      
+            // free 9-mer look-up tables and mini-burst tries
+            if ( lookup_tbl != NULL )
+            {
+              for ( uint32_t i = 0; i < (1<<lnwin[index_num]); i++ )
+              {
+                if (lookup_tbl[i].trie_F != NULL )
                 {
-                  delete [] positions_tbl[i].arr;
-                  positions_tbl[i].arr = NULL;
+                  delete [] lookup_tbl[i].trie_F;
+                  lookup_tbl[i].trie_F = NULL;
+                  lookup_tbl[i].trie_R = NULL;
                 }
-            }
-            delete [] positions_tbl;
-            positions_tbl = NULL;
-          }
-          
-          // free reference sequences loaded into memory
-          if ( buffer != NULL )
-          {
-            delete [] buffer;
-            buffer = NULL;
-          }
-          if ( reference_seq != NULL )
-          {
-            delete [] reference_seq;
-            reference_seq = NULL;
-          }
-          if ( reference_seq_len != NULL )
-          {
-            delete [] reference_seq_len;
-            reference_seq_len = NULL;
-          }
-                    
-          // free 9-mer look-up tables and mini-burst tries
-          if ( lookup_tbl != NULL )
-          {
-            for ( uint32_t i = 0; i < (1<<lnwin[index_num]); i++ )
-            {
-              if (lookup_tbl[i].trie_F != NULL )
-              {
-                delete [] lookup_tbl[i].trie_F;
-                lookup_tbl[i].trie_F = NULL;
-                lookup_tbl[i].trie_R = NULL;
+                if ( lookup_tbl[i].trie_R != NULL )
+                {
+                  delete [] lookup_tbl[i].trie_R;
+                  lookup_tbl[i].trie_R = NULL;
+                }
               }
-              if ( lookup_tbl[i].trie_R != NULL )
-              {
-                delete [] lookup_tbl[i].trie_R;
-                lookup_tbl[i].trie_R = NULL;
-              }
+              delete [] lookup_tbl;
+              lookup_tbl = NULL;
             }
-            delete [] lookup_tbl;
-            lookup_tbl = NULL;
           }
-        }
-        TIME(f);
+          TIME(f);
         
-        eprintf(" done [%.2f sec]\n", (f-s));
+          eprintf(" done [%.2f sec]\n", (f-s));
+        }
         
         // increment the index part to next file
         prt_str.str("");
