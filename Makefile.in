@@ -79,7 +79,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = indexdb$(EXEEXT) sortmedna$(EXEEXT)
+bin_PROGRAMS = indexdb_dna$(EXEEXT) sortmedna$(EXEEXT)
 subdir = .
 DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog \
 	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -99,7 +99,7 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(includedir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
-am_indexdb_OBJECTS = ./cmph/bdz.$(OBJEXT) ./cmph/bdz_ph.$(OBJEXT) \
+am_indexdb_dna_OBJECTS = ./cmph/bdz.$(OBJEXT) ./cmph/bdz_ph.$(OBJEXT) \
 	./cmph/bmz.$(OBJEXT) ./cmph/bmz8.$(OBJEXT) \
 	./cmph/brz.$(OBJEXT) ./cmph/buffer_entry.$(OBJEXT) \
 	./cmph/buffer_manager.$(OBJEXT) ./cmph/chd.$(OBJEXT) \
@@ -112,8 +112,8 @@ am_indexdb_OBJECTS = ./cmph/bdz.$(OBJEXT) ./cmph/bdz_ph.$(OBJEXT) \
 	./cmph/miller_rabin.$(OBJEXT) ./cmph/select.$(OBJEXT) \
 	./cmph/vqueue.$(OBJEXT) ./cmph/vstack.$(OBJEXT) \
 	./src/indexdb.$(OBJEXT)
-indexdb_OBJECTS = $(am_indexdb_OBJECTS)
-indexdb_LDADD = $(LDADD)
+indexdb_dna_OBJECTS = $(am_indexdb_dna_OBJECTS)
+indexdb_dna_LDADD = $(LDADD)
 am_sortmedna_OBJECTS = ./alp/gumbel_params.$(OBJEXT) \
 	./alp/njn_dynprogprob.$(OBJEXT) \
 	./alp/njn_dynprogproblim.$(OBJEXT) \
@@ -170,8 +170,8 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(indexdb_SOURCES) $(sortmedna_SOURCES)
-DIST_SOURCES = $(indexdb_SOURCES) $(sortmedna_SOURCES)
+SOURCES = $(indexdb_dna_SOURCES) $(sortmedna_SOURCES)
+DIST_SOURCES = $(indexdb_dna_SOURCES) $(sortmedna_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -341,7 +341,7 @@ include_HEADERS = ./alp/gumbel_params.hpp ./alp/njn_dynprogprob.hpp ./alp/njn_dy
                      ./cmph/bdz.h ./cmph/bdz_ph.h ./cmph/bdz_structs.h ./cmph/bdz_structs_ph.h ./cmph/bitbool.h ./cmph/bmz.h ./cmph/bmz8.h ./cmph/bmz8_structs.h ./cmph/bmz_structs.h ./cmph/brz.h ./cmph/brz_structs.h ./cmph/buffer_entry.h ./cmph/buffer_manager.h ./cmph/chd.h ./cmph/chd_ph.h ./cmph/chd_structs.h ./cmph/chd_structs_ph.h ./cmph/chm.h ./cmph/chm_structs.h ./cmph/cmph.h ./cmph/cmph_structs.h ./cmph/cmph_time.h ./cmph/cmph_types.h ./cmph/compressed_rank.h ./cmph/compressed_seq.h ./cmph/debug.h ./cmph/fch.h ./cmph/fch_buckets.h ./cmph/fch_structs.h ./cmph/graph.h ./cmph/hash.h ./cmph/hash_state.h ./cmph/jenkins_hash.h ./cmph/miller_rabin.h ./cmph/select.h ./cmph/select_lookup_tables.h ./cmph/vqueue.h ./cmph/vstack.h \
                      ./include/bitvector.hpp ./include/common.hpp ./include/indexdb.hpp ./include/loadgenome.hpp ./include/paralleltraversal.hpp ./include/triestats.hpp ./include/ssw.h ./include/outputformats.hpp
 
-indexdb_SOURCES = ./cmph/bdz.c ./cmph/bdz_ph.c ./cmph/bmz.c ./cmph/bmz8.c ./cmph/brz.c ./cmph/buffer_entry.c ./cmph/buffer_manager.c ./cmph/chd.c ./cmph/chd_ph.c ./cmph/chm.c ./cmph/cmph.c ./cmph/cmph_structs.c ./cmph/compressed_rank.c ./cmph/compressed_seq.c ./cmph/fch.c ./cmph/fch_buckets.c ./cmph/graph.c ./cmph/hash.c ./cmph/jenkins_hash.c ./cmph/miller_rabin.c ./cmph/select.c ./cmph/vqueue.c ./cmph/vstack.c \
+indexdb_dna_SOURCES = ./cmph/bdz.c ./cmph/bdz_ph.c ./cmph/bmz.c ./cmph/bmz8.c ./cmph/brz.c ./cmph/buffer_entry.c ./cmph/buffer_manager.c ./cmph/chd.c ./cmph/chd_ph.c ./cmph/chm.c ./cmph/cmph.c ./cmph/cmph_structs.c ./cmph/compressed_rank.c ./cmph/compressed_seq.c ./cmph/fch.c ./cmph/fch_buckets.c ./cmph/graph.c ./cmph/hash.c ./cmph/jenkins_hash.c ./cmph/miller_rabin.c ./cmph/select.c ./cmph/vqueue.c ./cmph/vstack.c \
 	             ./src/indexdb.cpp
 
 sortmedna_SOURCES = ./alp/gumbel_params.cpp ./alp/njn_dynprogprob.cpp ./alp/njn_dynprogproblim.cpp ./alp/njn_dynprogprobproto.cpp  ./alp/njn_ioutil.cpp ./alp/njn_localmaxstat.cpp ./alp/njn_localmaxstatmatrix.cpp ./alp/njn_localmaxstatutil.cpp ./alp/njn_random.cpp ./alp/sls_alp.cpp ./alp/sls_alp_data.cpp ./alp/sls_alp_regression.cpp ./alp/sls_alp_sim.cpp ./alp/sls_pvalues.cpp \
@@ -503,9 +503,9 @@ src/$(DEPDIR)/$(am__dirstamp):
 ./src/indexdb.$(OBJEXT): src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 
-indexdb$(EXEEXT): $(indexdb_OBJECTS) $(indexdb_DEPENDENCIES) $(EXTRA_indexdb_DEPENDENCIES) 
-	@rm -f indexdb$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(indexdb_OBJECTS) $(indexdb_LDADD) $(LIBS)
+indexdb_dna$(EXEEXT): $(indexdb_dna_OBJECTS) $(indexdb_dna_DEPENDENCIES) $(EXTRA_indexdb_dna_DEPENDENCIES) 
+	@rm -f indexdb_dna$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(indexdb_dna_OBJECTS) $(indexdb_dna_LDADD) $(LIBS)
 alp/$(am__dirstamp):
 	@$(MKDIR_P) ./alp
 	@: > alp/$(am__dirstamp)
