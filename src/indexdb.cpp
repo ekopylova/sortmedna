@@ -881,8 +881,9 @@ void load_index( kmer* lookup_table, char* outfile )
 void welcome()
 {
   printf("\n  Program:     SortMeDNA version %s\n",version_num );
-  printf("  Copyright:   2013-2015 Bonsai Bioinformatics Research Group:\n");
+  printf("  Copyright:   2013-2015 Bonsai Bioinformatics Research Group\n");
   printf("               LIFL, University Lille 1, CNRS UMR 8022, INRIA Nord-Europe\n" );
+  printf("               2015 Knight Lab, Department of Pediatrics, UCSD, La Jolla\n");
   printf("  Disclaimer:  SortMeDNA comes with ABSOLUTELY NO WARRANTY; without even the\n");
   printf("               implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n");
   printf("               See the GNU Lesser General Public License for more details.\n");
@@ -903,7 +904,7 @@ void welcome()
  *******************************************************************/
 void printlist()
 {
-	printf("\n  usage:   ./indexdb_rna --ref db.fasta,db.idx [OPTIONS]:\n\n");
+	printf("\n  usage:   ./indexdb_dna --ref db.fasta,db.idx [OPTIONS]:\n\n");
   printf("  --------------------------------------------------------------------------------------------------------\n");
   printf("  | parameter        value           description                                                 default |\n");
   printf("  --------------------------------------------------------------------------------------------------------\n");
@@ -941,7 +942,7 @@ void printlist()
  **************************************************************************************************************/
 int main (int argc, char** argv)
 {
-	int narg = 1;
+  int narg = 1;
 	// time
 	double	s = 0.0;
 	double  f = 0.0;
@@ -1399,19 +1400,23 @@ int main (int argc, char** argv)
   char keys_str[2000] = "";
   char* tmpdir_env = NULL;
     
-  /// tmpdir provided
+  // tmpdir provided
   if ( ptr_tmpdir != NULL )
   {
-    strcat(keys_str,ptr_tmpdir);
+    char tmp_str[4000] = "";
+    strcat(tmp_str,ptr_tmpdir);
     char* ptr_tmpdir_t = ptr_tmpdir;
     while (*ptr_tmpdir_t++ != '\0');
-    if (*(ptr_tmpdir_t-2) != '/') strcat(keys_str,"/");
+    if (*(ptr_tmpdir_t-2) != '/') strcat(tmp_str,"/");
     
-    char try_str[4000] = "";
-    strcat(try_str,keys_str);
-    strcat(try_str,"test.txt");
-    
-    FILE *tmp = fopen(try_str, "w+");
+    // test_pid.txt
+    char tmp_str_test[4100] = "";
+    strcat(tmp_str_test, tmp_str);
+    strcat(tmp_str_test, "test_");
+    strcat(tmp_str_test, pidStr);
+    strcat(tmp_str_test, ".txt");
+
+    FILE *tmp = fopen(tmp_str_test, "w+");
     if ( tmp == NULL )
     {
       fprintf(stderr,"\n  %sERROR%s: cannot access directory %s: "
@@ -1419,58 +1424,97 @@ int main (int argc, char** argv)
                      strerror(errno));
       exit(EXIT_FAILURE);
     }
+    else 
+    {
+      // remove temporary test file
+      if ( remove(tmp_str_test) != 0 )
+        fprintf(stderr, "%sWARNING%s: could not delete temporary file %s\n",
+                        "\033[0;33m", "\033[0m", tmp_str_test);
+
+      // set the working directory
+      memcpy(keys_str, tmp_str, 4000);
+    }
   }
-  /// tmpdir not provided, try $TMPDIR, /tmp and local directories
+  // tmpdir not provided, try $TMPDIR, /tmp and local directories
   else
   {
     bool try_further = true;
     
-    /// try TMPDIR
+    // try TMPDIR
     tmpdir_env = getenv("TMPDIR");
     if ( (tmpdir_env != NULL) && (strcmp(tmpdir_env,"")!=0) )
     {
-      strcat(keys_str,tmpdir_env);
+      char tmp_str[4000] = "";
+      strcat(tmp_str,tmpdir_env);
       char* ptr_tmpdir_t = tmpdir_env;
       while (*ptr_tmpdir_t++ != '\0');
-      if (*(ptr_tmpdir_t-2) != '/') strcat(keys_str,"/");
+      if (*(ptr_tmpdir_t-2) != '/') strcat(tmp_str,"/");
       
-      char try_str[4000] = "";
-      strcat(try_str,keys_str);
-      strcat(try_str,"test.txt");
+      char tmp_str_test[4100] = "";
+      strcat(tmp_str_test,tmp_str);
+      strcat(tmp_str_test,"test_");
+      strcat(tmp_str_test,pidStr);
+      strcat(tmp_str_test,".txt");
       
-      FILE *tmp = fopen(try_str, "w+");
+      FILE *tmp = fopen(tmp_str_test, "w+");
       if ( tmp == NULL )
       {
         fprintf(stderr,"\n  %sWARNING%s: no write permissions in "
                        "directory %s: %s\n","\033[0;33m","\033[0m",
                        tmpdir_env,strerror(errno));
         fprintf(stderr,"  will try /tmp/.\n\n");
-        try_further = true;
       }
-      else try_further = false;
+      else
+      {
+        // remove the temporary test file
+        if ( remove(tmp_str_test) !=0 )
+          fprintf(stderr, "  %sWARNING%s: could not delete temporary file %s\n",
+                          "\033[0;33m","\033[0m", tmp_str_test);
+  
+        // set working directory
+        memcpy(keys_str, tmp_str, 4000);
+
+        try_further = false;
+      }
     }
-    /// try "/tmp" directory
+    // try "/tmp" directory
     if ( try_further )
     {
-      FILE *tmp = fopen("/tmp/test.txt", "w+");
+      char tmp_str[4000] = "";
+      strcat(tmp_str, "/tmp/test_");
+      strcat(tmp_str, pidStr);
+      strcat(tmp_str, ".txt");
+
+      FILE *tmp = fopen(tmp_str, "w+");
       if ( tmp == NULL )
       {
         fprintf(stderr,"\n  %sWARNING%s: no write permissions in "
                        "directory /tmp/: %s\n","\033[0;33m","\033[0m",
                        strerror(errno));
         fprintf(stderr,"  will try local directory.\n\n");
-        try_further = true;
       }
       else
       {
+        // remove the temporary test file
+        if ( remove(tmp_str) != 0 )
+          fprintf(stderr, "  %sWARNING%s: could not delete temporary file %s\n",
+                          "\033[0;33m","\033[0m", tmp_str);
+  
+        // set working directory
         strcat(keys_str,"/tmp/");
+
         try_further = false;
       } 
     }
-    /// try the local directory
+    // try the local directory
     if ( try_further )
     {
-      FILE *tmp = fopen("./test.txt", "w+");
+      char tmp_str[4000] = "";
+      strcat(tmp_str, "./test_");
+      strcat(tmp_str, pidStr);
+      strcat(tmp_str, ".txt");
+
+      FILE *tmp = fopen(tmp_str, "w+");
       if ( tmp == NULL )
       {
         fprintf(stderr,"\n  %sERROR%s: no write permissions in current "
@@ -1483,13 +1527,19 @@ int main (int argc, char** argv)
       }
       else
       {
-        strcat(keys_str,"./");
+        // remove the temporary test file
+        if ( remove(tmp_str) != 0 )
+          fprintf(stderr, "  %sWARNING%s: could not delete temporary file %s\n",
+                          "\033[0;33m","\033[0m", tmp_str);
+
+        // set working directory
+        strcat(keys_str, "./");
         try_further = false;
       }
     }
   }
     
-  strcat(keys_str, "sortmerna_keys_");
+  strcat(keys_str, "sortmedna_keys_");
   strcat(keys_str,pidStr);
   strcat(keys_str,".txt");
   
@@ -1728,7 +1778,8 @@ int main (int argc, char** argv)
               
               // check the addition of this sequence will not overflow the
               // maximum memory (estimated memory 10 bytes per L-mer)
-              double estimated_seq_mem = (len-pread_gv+1)*9.5e-6;
+              //double estimated_seq_mem = (len-pread_gv+1)*9.5e-6;
+              double estimated_seq_mem = (len-pread_gv+1)*90;
               
               // the sequence alone is too large, it will not fit into maximum
               // memory, skip it
