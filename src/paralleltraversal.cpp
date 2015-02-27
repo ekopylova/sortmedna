@@ -1,6 +1,6 @@
 /**
  * @file paralleltraversal.cpp
- * @brief File containing functions for index traversal.
+ * @brief File containing functions for index traversal
  * @parblock
  * SortMeDNA - metagenomic and genomic mapper for second and third generation sequencers
  * @copyright 2013-2015 Bonsai Bioinformatics Research Group
