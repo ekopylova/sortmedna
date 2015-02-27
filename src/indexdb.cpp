@@ -1779,7 +1779,6 @@ int main (int argc, char** argv)
               // check the addition of this sequence will not overflow the
               // maximum memory (estimated memory 100 bytes per L-mer)
               double estimated_seq_mem = (len-pread_gv+1)*9.5e-5;
-              //double estimated_seq_mem = (len-pread_gv+1)*90;
               
               // the sequence alone is too large, it will not fit into maximum
               // memory, skip it
@@ -1958,7 +1957,7 @@ int main (int argc, char** argv)
               delete [] myseq;
               delete [] myseqr;
                 
-            } while ( nt != EOF ); /// all file
+            } while ( nt != EOF ); // all file
             
             TIME(f);
             
@@ -2072,7 +2071,7 @@ int main (int argc, char** argv)
                 if ( nt != EOF ) ungetc(nt,fp);
                 
                 // check the addition of this sequence will not overflow the maximum memory
-                double estimated_seq_mem = (len-pread_gv+1)*9.5e-6;
+                double estimated_seq_mem = (len-pread_gv+1)*9.5e-5;
                 
                 // the sequence alone is too large, it will not fit into maximum memory, skip it
                 if ( estimated_seq_mem > mem ) continue;
@@ -2253,7 +2252,7 @@ int main (int argc, char** argv)
              
              
              /// check the addition of this sequence will not overflow the maximum memory
-             double estimated_seq_mem = (len-pread_gv+1)*9.5e-6;
+             double estimated_seq_mem = (len-pread_gv+1)*9.5e-5;
              
              /// the sequence alone is too large, it will not fit into maximum memory, skip it
              if ( estimated_seq_mem > mem ) continue;
