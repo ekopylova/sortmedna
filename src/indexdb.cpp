@@ -1777,9 +1777,9 @@ int main (int argc, char** argv)
               long int end_seq = ftell(fp);
               
               // check the addition of this sequence will not overflow the
-              // maximum memory (estimated memory 10 bytes per L-mer)
-              //double estimated_seq_mem = (len-pread_gv+1)*9.5e-6;
-              double estimated_seq_mem = (len-pread_gv+1)*90;
+              // maximum memory (estimated memory 100 bytes per L-mer)
+              double estimated_seq_mem = (len-pread_gv+1)*9.5e-5;
+              //double estimated_seq_mem = (len-pread_gv+1)*90;
               
               // the sequence alone is too large, it will not fit into maximum
               // memory, skip it
