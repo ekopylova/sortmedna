@@ -15,16 +15,6 @@ sortmedna_SOURCES  = ./alp/gumbel_params.cpp ./alp/njn_dynprogprob.cpp ./alp/njn
                      ./src/bitvector.cpp ./src/ssw.c ./src/outputformats.cpp ./src/paralleltraversal.cpp ./src/main.cpp
 
 
-
-
-
-
-# dir are installed by default in /usr/local/sortmerna/
-sortmernadir       =  $(prefix)/@PACKAGE@/index
-sortmerna_DATA     =  ./index/.tobuild 
-
-EXTRA_DIST =  SortMeDNA-user-manual-v1.0.pdf DATABASES index/.tobuild
-
 check: check-am
 	@echo ' '
 	@echo '---------------------------------------------------------------------------------------------'

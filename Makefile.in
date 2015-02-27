@@ -17,7 +17,6 @@
 # Makefile.am
 
 
-
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
@@ -82,11 +81,11 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 bin_PROGRAMS = indexdb$(EXEEXT) sortmedna$(EXEEXT)
 subdir = .
-DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog COPYING \
+DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog \
 	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
 	$(top_srcdir)/include/config.h.in depcomp $(include_HEADERS) \
-	compile install-sh missing
+	COPYING compile install-sh missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -97,8 +96,7 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/include/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(sortmernadir)" \
-	"$(DESTDIR)$(includedir)"
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(includedir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_indexdb_OBJECTS = ./cmph/bdz.$(OBJEXT) ./cmph/bdz_ph.$(OBJEXT) \
@@ -206,7 +204,6 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-DATA = $(sortmerna_DATA)
 HEADERS = $(include_HEADERS)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
@@ -350,11 +347,6 @@ indexdb_SOURCES = ./cmph/bdz.c ./cmph/bdz_ph.c ./cmph/bmz.c ./cmph/bmz8.c ./cmph
 sortmedna_SOURCES = ./alp/gumbel_params.cpp ./alp/njn_dynprogprob.cpp ./alp/njn_dynprogproblim.cpp ./alp/njn_dynprogprobproto.cpp  ./alp/njn_ioutil.cpp ./alp/njn_localmaxstat.cpp ./alp/njn_localmaxstatmatrix.cpp ./alp/njn_localmaxstatutil.cpp ./alp/njn_random.cpp ./alp/sls_alp.cpp ./alp/sls_alp_data.cpp ./alp/sls_alp_regression.cpp ./alp/sls_alp_sim.cpp ./alp/sls_pvalues.cpp \
                      ./src/bitvector.cpp ./src/ssw.c ./src/outputformats.cpp ./src/paralleltraversal.cpp ./src/main.cpp
 
-
-# dir are installed by default in /usr/local/sortmerna/
-sortmernadir = $(prefix)/@PACKAGE@/index
-sortmerna_DATA = ./index/.tobuild 
-EXTRA_DIST = SortMeDNA-user-manual-v1.0.pdf DATABASES index/.tobuild
 all: all-am
 
 .SUFFIXES:
@@ -646,27 +638,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
-install-sortmernaDATA: $(sortmerna_DATA)
-	@$(NORMAL_INSTALL)
-	@list='$(sortmerna_DATA)'; test -n "$(sortmernadir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(sortmernadir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(sortmernadir)" || exit 1; \
-	fi; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(sortmernadir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(sortmernadir)" || exit $$?; \
-	done
-
-uninstall-sortmernaDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(sortmerna_DATA)'; test -n "$(sortmernadir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(sortmernadir)'; $(am__uninstall_files_from_dir)
 install-includeHEADERS: $(include_HEADERS)
 	@$(NORMAL_INSTALL)
 	@list='$(include_HEADERS)'; test -n "$(includedir)" || list=; \
@@ -913,9 +884,9 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS) $(DATA) $(HEADERS)
+all-am: Makefile $(PROGRAMS) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(sortmernadir)" "$(DESTDIR)$(includedir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(includedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install-exec: install-exec-am
@@ -973,7 +944,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-includeHEADERS install-sortmernaDATA
+install-data-am: install-includeHEADERS
 
 install-dvi: install-dvi-am
 
@@ -1020,8 +991,7 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS uninstall-includeHEADERS \
-	uninstall-sortmernaDATA
+uninstall-am: uninstall-binPROGRAMS uninstall-includeHEADERS
 
 .MAKE: install-am install-strip
 
@@ -1037,12 +1007,11 @@ uninstall-am: uninstall-binPROGRAMS uninstall-includeHEADERS \
 	install-exec-am install-html install-html-am \
 	install-includeHEADERS install-info install-info-am \
 	install-man install-pdf install-pdf-am install-ps \
-	install-ps-am install-sortmernaDATA install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am uninstall-binPROGRAMS uninstall-includeHEADERS \
-	uninstall-sortmernaDATA
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
+	ps ps-am tags tags-am uninstall uninstall-am \
+	uninstall-binPROGRAMS uninstall-includeHEADERS
 
 
 check: check-am
