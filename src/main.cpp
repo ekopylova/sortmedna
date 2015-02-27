@@ -3,8 +3,9 @@
  * @brief File containing the main function and argument parsing.
  * @parblock
  * SortMeDNA - metagenomic and genomic mapper for second and third generation sequencers
- * @copyright Copyright (C) 2013-2015 Bonsai Bioinformatics Research Group 
- * INRIA Nord-Europe, France
+ * @copyright 2013-2015 Bonsai Bioinformatics Research Group
+ * 2015 Knight Lab, Department of Pediatrics, UCSD, La Jolla
+ * GNU GENERAL PUBLIC LICENSE
  *
  * SortMeDNA is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by

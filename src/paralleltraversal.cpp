@@ -3,7 +3,8 @@
  * @brief File containing functions for index traversal.
  * @parblock
  * SortMeDNA - metagenomic and genomic mapper for second and third generation sequencers
- * Copyright (C) 2013-2015 Bonsai Bioinformatics Research Group 
+ * @copyright 2013-2015 Bonsai Bioinformatics Research Group
+ * 2015 Knight Lab, Department of Pediatrics, UCSD, La Jolla
  * GNU GENERAL PUBLIC LICENSE
  *
  * SortMeDNA is free software: you can redistribute it and/or modify
@@ -2150,7 +2151,7 @@ paralleltraversal ( char* inputreads,
       for ( int32_t s = 0; s < strs; s++ ) num_alignments_x[s] = num_alignments_gv;
     }
     
-    // loop through every index passed to option --ref (ex. SSU 16S and SSU 18S)
+    // loop through every index passed to option --ref (ex. genome 1, genome 2)
     for ( uint16_t index_num = 0; index_num < (uint16_t)myfiles.size(); index_num++)
     {
       // covert part number into a string

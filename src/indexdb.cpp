@@ -1,6 +1,7 @@
 /*
  * SortMeDNA - metagenomic and genomic mapper for second and third generation sequencers
- * Copyright (C) 2013-2015 Bonsai Bioinformatics Research Group 
+ * @copyright 2013-2015 Bonsai Bioinformatics Research Group
+ * 2015 Knight Lab, Department of Pediatrics, UCSD, La Jolla
  * GNU GENERAL PUBLIC LICENSE
  *
  * This program is free software: you can redistribute it and/or modify
