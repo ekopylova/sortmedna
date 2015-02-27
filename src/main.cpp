@@ -80,8 +80,9 @@ int32_t num_best_hits_gv = 0;
 void welcome()
 {
   printf("\n  Program:     SortMeDNA version %s\n",version_num );
-  printf("  Copyright:   2014-2015 Bonsai Bioinformatics Research Group:\n");
+  printf("  Copyright:   2013-2015 Bonsai Bioinformatics Research Group:\n");
   printf("               LIFL, University Lille 1, CNRS UMR 8022, INRIA Nord-Europe\n" );
+  printf("               2015 Knight Lab, Department of Pediatrics, UCSD, La Jolla\n");
   printf("  Disclaimer:  SortMeDNA comes with ABSOLUTELY NO WARRANTY; without even the\n");
   printf("               implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n");
   printf("               See the GNU Lesser General Public License for more details.\n");
