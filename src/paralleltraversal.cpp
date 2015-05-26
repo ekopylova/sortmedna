@@ -2866,14 +2866,35 @@ paralleltraversal ( char* inputreads,
                               align_que_start = lcs_que_start - lcs_ref_start;
                               head = 0;
                               // the read is longer than the reference sequence
-                              //            ref |--------------|
-                              // que |----------------------------|
+                              //            ref |----------------|
+                              // que |---------------------...|
                               //                LIS |-----|
                               //
                               if ( reflen < readlen )
                               {
                                 tail = 0;
-                                align_length = reflen;
+                                // beginning from align_ref_start = 0 and align_que_start = X, the read finishes
+                                // before the end of the reference
+                                //            ref |----------------|
+                                // que |------------------------|
+                                //                  LIS |-----|
+                                //                ^
+                                //                align_que_start
+                                if ( align_que_start > (readlen - reflen) )
+                                {
+                                  align_length = reflen - (align_que_start - (readlen - reflen));
+                                }
+                                // beginning from align_ref_start = 0 and align_que_start = X, the read finishes
+                                // after the end of the reference
+                                //            ref |----------------|
+                                // que |------------------------------|
+                                //                  LIS |-----|
+                                //                ^
+                                //                align_que_start
+                                else
+                                {
+                                  align_length = reflen;
+                                }
                               }
                               else
                               {
