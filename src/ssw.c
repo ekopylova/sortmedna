@@ -657,7 +657,7 @@ static cigar* banded_sw (const int8_t* ref,
 	j = refLen - 1;
 	e = 0;	// Count the number of M, D or I.
 	l = 0;	// record length of current cigar
-	op = prev_op = 'M' // M
+	op = prev_op = 'M'; // M
 	temp2 = 2;	// h
 	while (LIKELY(i > 0)) {
 		set_d(temp1, band_width, i, j, temp2);
