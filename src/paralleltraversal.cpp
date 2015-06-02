@@ -2993,7 +2993,8 @@ paralleltraversal ( char* inputreads,
                             //uint16_t filters = 0;
                             
                             result = ssw_align( profile,
-                                               (int8_t*)reference_seq[(2*(int)max_seq)+1]+align_ref_start-head,align_length,
+                                               (int8_t*)reference_seq[(2*(int)max_seq)+1]+align_ref_start-head,
+                                               align_length,
                                                gap_open,
                                                gap_extension,
                                                2,

@@ -39,7 +39,7 @@
  * Important: parts of this file have been modified by Evguenia Kopylova
  *            to work with SortMeRNA. Please download the code published
  *            with the SSW library for the original version.
- *            July 10, 2013
+ *            updates: July 10, 2013 - June 01, 2015
  */
 
 #include <emmintrin.h>
@@ -105,7 +105,7 @@ int8_t rc_table[128] = {
 
 
 /* Generate query profile rearrange query sequence & calculate the weight of match/mismatch. */
-__m128i* qP_byte (const int8_t* read_num,
+static __m128i* qP_byte (const int8_t* read_num,
 				  const int8_t* mat,
 				  const int32_t readLen,
 				  const int32_t n,	/* the edge length of the square matrix mat */
@@ -139,13 +139,13 @@ __m128i* qP_byte (const int8_t* read_num,
    wight_match > 0, all other weights < 0.
    The returned positions are 0-based.
  */ 
-alignment_end* sw_sse2_byte (const int8_t* ref,
+static alignment_end* sw_sse2_byte (const int8_t* ref,
 							 int8_t ref_dir,	// 0: forward ref; 1: reverse ref
 							 int32_t refLen,
 							 int32_t readLen, 
 							 const uint8_t weight_gapO, /* will be used as - */
 							 const uint8_t weight_gapE, /* will be used as - */
-							 __m128i* vProfile,
+							 const __m128i* vProfile,
 							 uint8_t terminate,	/* the best alignment score: used to terminate 
 												   the matrix calculation when locating the 
 												   alignment beginning point. If this score 
@@ -204,7 +204,7 @@ alignment_end* sw_sse2_byte (const int8_t* ref,
 	}
 	for (i = begin; LIKELY(i != end); i += step) {
 		int32_t cmp;
-		__m128i e = vZero, vF = vZero, vMaxColumn = vZero; /* Initialize F value to 0. 
+		__m128i e, vF = vZero, vMaxColumn = vZero; /* Initialize F value to 0. 
 							   Any errors to vH values will be corrected in the Lazy_F loop. 
 							 */
 //		max16(maxColumn[i], vMaxColumn);
@@ -212,7 +212,7 @@ alignment_end* sw_sse2_byte (const int8_t* ref,
 
 		__m128i vH = pvHStore[segLen - 1];
 		vH = _mm_slli_si128 (vH, 1); /* Shift the 128-bit value in vH left by 1 byte. */
-		__m128i* vP = vProfile + ref[i] * segLen; /* Right part of the vProfile */
+		const __m128i* vP = vProfile + ref[i] * segLen; /* Right part of the vProfile */
 
 		/* Swap the 2 H buffers. */
 		__m128i* pv = pvHLoad;
@@ -364,7 +364,7 @@ alignment_end* sw_sse2_byte (const int8_t* ref,
 	return bests;
 }
 
-__m128i* qP_word (const int8_t* read_num,
+static __m128i* qP_word (const int8_t* read_num,
 				  const int8_t* mat,
 				  const int32_t readLen,
 				  const int32_t n) { 
@@ -388,13 +388,13 @@ __m128i* qP_word (const int8_t* read_num,
 	return vProfile;
 }
 
-alignment_end* sw_sse2_word (const int8_t* ref, 
+static alignment_end* sw_sse2_word (const int8_t* ref, 
 							 int8_t ref_dir,	// 0: forward ref; 1: reverse ref
 							 int32_t refLen,
 							 int32_t readLen, 
 							 const uint8_t weight_gapO, /* will be used as - */
 							 const uint8_t weight_gapE, /* will be used as - */
-						     __m128i* vProfile,
+						     const __m128i* vProfile,
 							 uint16_t terminate, 
 							 int32_t maskLen) { 
 
@@ -443,7 +443,7 @@ alignment_end* sw_sse2_word (const int8_t* ref,
 	}
 	for (i = begin; LIKELY(i != end); i += step) {
 		int32_t cmp;
-		__m128i e = vZero, vF = vZero; /* Initialize F value to 0. 
+		__m128i e, vF = vZero; /* Initialize F value to 0. 
 							   Any errors to vH values will be corrected in the Lazy_F loop. 
 							 */
 		__m128i vH = pvHStore[segLen - 1];
@@ -454,7 +454,7 @@ alignment_end* sw_sse2_word (const int8_t* ref,
 		
 		__m128i vMaxColumn = vZero; /* vMaxColumn is used to record the max values of column i. */
 		
-		__m128i* vP = vProfile + ref[i] * segLen; /* Right part of the vProfile */
+		const __m128i* vP = vProfile + ref[i] * segLen; /* Right part of the vProfile */
 		pvHLoad = pvHStore;
 		pvHStore = pv;
 		
@@ -566,7 +566,7 @@ end:
 	return bests;
 }
 
-cigar* banded_sw (const int8_t* ref,
+static cigar* banded_sw (const int8_t* ref,
 				 const int8_t* read, 
 				 int32_t refLen, 
 				 int32_t readLen,
@@ -578,7 +578,9 @@ cigar* banded_sw (const int8_t* ref,
 				 int32_t n) {
     
 	uint32_t *c = (uint32_t*)malloc(16 * sizeof(uint32_t)), *c1;
-	int32_t i, j, e, f, temp1, temp2, s = 16, s1 = 8, s2 = 1024, l, max = 0;
+	int32_t i, j, e, f, temp1, temp2, s = 16, s1 = 8, l, max = 0;
+	int64_t s2 = 1024;
+	char op, prev_op;
 	int32_t width, width_d, *h_b, *e_b, *h_c;
 	int8_t *direction, *direction_line;
 	cigar* result = (cigar*)malloc(sizeof(cigar));
@@ -602,18 +604,6 @@ cigar* banded_sw (const int8_t* ref,
 			if (s2 < 0) {
 				fprintf(stderr, "Alignment score and position are not consensus.\n");
 				exit(1);
-				free(h_b); //jenya
-				h_b = NULL;
-				free(e_b); //jenya
-				e_b = NULL;
-				free(h_c); //jenya
-				h_c = NULL;
-				free(direction); //jenya
-        direction = NULL;
-				free(c); //jenya
-        c = NULL;
-				free(result); //jenya
-				return 0;
 			}
 			direction = (int8_t*)realloc(direction, s2 * sizeof(int8_t)); 
 		}
@@ -667,7 +657,7 @@ cigar* banded_sw (const int8_t* ref,
 	j = refLen - 1;
 	e = 0;	// Count the number of M, D or I.
 	l = 0;	// record length of current cigar
-	f = max = 0; // M
+	op = prev_op = 'M' // M
 	temp2 = 2;	// h
 	while (LIKELY(i > 0)) {
 		set_d(temp1, band_width, i, j, temp2);
@@ -677,35 +667,41 @@ cigar* banded_sw (const int8_t* ref,
 				--j;
 				temp2 = 2;
 				direction_line -= width_d * 3;
-				f = 0;	// M
+				op = 'M';	// M
 				break;
 			case 2:
 			 	--i;
 				temp2 = 0;	// e
 				direction_line -= width_d * 3;
-				f = 1;	// I
+				op = 'I';	// I
 				break;		
 			case 3:
 				--i;
 				temp2 = 2;
 				direction_line -= width_d * 3;
-				f = 1;	// I
+				op = 'I';	// I
 				break;
 			case 4:
 				--j;
 				temp2 = 1;
-				f = 2;	// D
+				op = 'D';	// D
 				break;
 			case 5:
 				--j;
 				temp2 = 2;
-				f = 2;	// D
+				op = 'D';	// D
 				break;
 			default: 
-				fprintf(stderr, "Trace back error: %d.\n", direction_line[temp1 - 1]); exit(1);
+				fprintf(stderr, "Trace back error: %d.\n", direction_line[temp1 - 1]);
+				free(direction);
+				free(h_c);
+				free(e_b);
+				free(h_b);
+				free(c);
+				free(result);
 				return 0;
 		}
-		if (f == max) ++e;
+		if (op == prev_op) ++e;
 		else {
 			++l;
 			while (l >= s) {
@@ -713,19 +709,19 @@ cigar* banded_sw (const int8_t* ref,
 				kroundup32(s);
 				c = (uint32_t*)realloc(c, s * sizeof(uint32_t));
 			}
-			c[l - 1] = e<<4|max;
-			max = f;
+			c[l - 1] = to_cigar_int(e, prev_op);
+			prev_op = op;
 			e = 1;
 		}
 	}
-	if (f == 0) {
+	if (op == 'M') {
 		++l;
 		while (l >= s) {
 			++s;
 			kroundup32(s);
 			c = (uint32_t*)realloc(c, s * sizeof(uint32_t));
 		}
-		c[l - 1] = (e+1)<<4;
+		c[l - 1] = to_cigar_int(e+1, op);
 	}else {
 		l += 2;
 		while (l >= s) {
@@ -733,8 +729,8 @@ cigar* banded_sw (const int8_t* ref,
 			kroundup32(s);
 			c = (uint32_t*)realloc(c, s * sizeof(uint32_t));
 		}
-		c[l - 2] = e<<4|f;
-		c[l - 1] = 16;	// 1M
+		c[l - 2] = to_cigar_int(e, op);
+		c[l - 1] = to_cigar_int(1, 'M');	// 1M
 	}
 
 	// reverse cigar
@@ -763,7 +759,7 @@ cigar* banded_sw (const int8_t* ref,
 	return result;
 }
 
-int8_t* seq_reverse(const int8_t* seq, int32_t end)	/* end is 0-based alignment ending position */	
+static int8_t* seq_reverse(const int8_t* seq, int32_t end)	/* end is 0-based alignment ending position */	
 {									
 	int8_t* reverse = (int8_t*)calloc(end + 1, sizeof(int8_t));	
 	int32_t start = 0;
@@ -950,247 +946,32 @@ void align_destroy (s_align **a) {
     }
 }
 
-
-
-
-
-
-/*
- * @function ssw_write() outputs the alignments reaching threshold E-value in Blast-like and/or SAM formats
- * @param char* fileout_n is the file name for the output alignments (created in paralleltraversal.cpp)
- * @param s_align *a is the alignment profile for the read (defined in ssw.h)
- * @param char* read_name is a pointer to the first character of the read name (to '@' for FASTQ and to '>' for FASTA)
- * @param char* read_seq is set to the first nucleotide in the read (if strand=0,
- *              read_seq points to the reverse-complement read)
- * @param char* read_qual points to the first character of the quality (must be set to NULL for FASTA)
- * @param char* ref_seq is in the numerical alphabet (0-4) and in the forward or 
- *              reverse-complement direction, ref_seq is set to the first nucleotide
- *              (only 1 newline at end of sequence)
- * @param double evalue is the E-value
- * @param int readlen is the read length for the current read
- * @param unsigned int bitscore is the bitscore (computed in paralleltraversal.cpp)
- * @param bool strand is set to 1 if the read is forward and to 0 if it is in reverse-complement
- * @param int blast_or_sam is set to 1 for Blast-like output and to 0 for SAM output
- */
-
-void ssw_write (FILE** fileout,
-			s_align* a,
-            char* read_name,
-			char* read_seq,
-			char* read_qual,
-			char* ref_name,	
-			char* ref_seq,
-			double evalue,
-            int readlen,
-			unsigned int bitscore,
-			bool strand, // 1: forward aligned ; 0: reverse complement aligned
-			int blast_or_sam) // 1: Blast like output; 0: Sam format output 
+char cigar_int_to_op (uint32_t cigar_int)
 {
-		char to_char[5] = {'A','C','G','T','N'};
-	 
-		if (blast_or_sam == 1) // Blast like output
-		{
-			fprintf(*fileout, "Sequence ID: ");
-			char* tmp = ref_name;
-			while (*tmp != '\n') fprintf(*fileout,"%c",*tmp++);
-			fprintf(*fileout,"\n");
+	uint8_t letter_code = cigar_int & 0xfU;
+	static const char map[] = {
+		'M',
+		'I',
+		'D',
+		'N',
+		'S',
+		'H',
+		'P',
+		'=',
+		'X',
+	};
 
-			fprintf(*fileout, "Query ID: ");
-			tmp = read_name;
-			while (*tmp != '\n') fprintf(*fileout,"%c",*tmp++);
-			fprintf(*fileout,"\n");
-			
-			fprintf(*fileout, "Score: %d bits (%d)\t",bitscore,a->score1);
-			fprintf(*fileout, "Expect: %.2e\t", evalue);
-			if (strand) fprintf(*fileout, "strand: +\n\n");
-			else fprintf(*fileout, "strand: -\n\n");
-			if (a->cigar) {
-				int32_t i, c = 0, left = 0, e = 0, qb = a->ref_begin1, pb = a->read_begin1; //mine
-				while (e < a->cigarLen || left > 0) {
+	if (letter_code >= (sizeof(map)/sizeof(map[0]))) {
+		return 'M';
+	}
 
-					int32_t count = 0;
-					int32_t q = qb;
-					int32_t p = pb;
-					fprintf(*fileout, "Target: %8d    ", q + 1);
-					for (c = e; c < a->cigarLen; ++c) {
-						int32_t letter = 0xf&*(a->cigar + c);
-						int32_t length = (0xfffffff0&*(a->cigar + c))>>4;
-						int32_t l = (count == 0 && left > 0) ? left: length;
-						for (i = 0; i < l; ++i) {
-							if (letter == 1) fprintf(*fileout, "-");
-							else {
-								fprintf(*fileout, "%c", to_char[(int)*(ref_seq + q)]);
-								++q;
-							}
-							++ count;
-							if (count == 60) goto step2;
-						}
-					}
-	step2:
-					fprintf(*fileout, "    %d\n                    ", q);
-					q = qb;
-					count = 0;
-					for (c = e; c < a->cigarLen; ++c) {
-						int32_t letter = 0xf&*(a->cigar + c);
-						int32_t length = (0xfffffff0&*(a->cigar + c))>>4;
-						int32_t l = (count == 0 && left > 0) ? left: length;
-						for (i = 0; i < l; ++i){ 
-							if (letter == 0) {
-								if ((char)to_char[(int)*(ref_seq + q)] == (char)to_char[(int)*(read_seq + p)]) fprintf(*fileout, "|");
-								else fprintf(*fileout, "*");
-								++q;
-								++p;
-							} else {
-								fprintf(*fileout, " ");
-								if (letter == 1) ++p;
-								else ++q;
-							}
-							++ count;
-							if (count == 60) {
-								qb = q;
-								goto step3;
-							}
-						}
-					}
-	step3:
-					p = pb;
-					fprintf(*fileout, "\nQuery:  %8d    ", p + 1);
-					count = 0;
-					for (c = e; c < a->cigarLen; ++c) {
-						int32_t letter = 0xf&*(a->cigar + c);
-						int32_t length = (0xfffffff0&*(a->cigar + c))>>4;
-						int32_t l = (count == 0 && left > 0) ? left: length;
-						for (i = 0; i < l; ++i) { 
-							if (letter == 2) fprintf(*fileout, "-");
-							else {							
-								fprintf(*fileout, "%c", (char)to_char[(int)*(read_seq + p)]);
-								++p;
-							}
-							++ count;
-							if (count == 60) {
-								pb = p;
-								left = l - i - 1;
-								e = (left == 0) ? (c + 1) : c;
-								goto end;
-							}
-						}
-					}
-					e = c;
-					left = 0;
-	end:
-					fprintf(*fileout, "    %d\n\n", p);
-				}
-			}
-		}
-		/* SAM output */
-		else
-		{
-			/// (1) QNAME 
-			while ((*read_name != ' ') && (*read_name != '\n') && (*read_name != '\t')) fprintf(*fileout,"%c",*read_name++);
-            /* set the read name ptr to end of read name */
-            while (*read_name != '\n') read_name++;
+	return map[letter_code];
+}
 
-			if (a->score1 == 0) fprintf(*fileout, "4\t*\t0\t255\t*\t*\t0\t0\t*\t*\n");
-			else {
-				int32_t c;
-                //int32_t l = a->read_end1 - a->read_begin1 + 1;
-                int32_t qb = a->ref_begin1;
-                int32_t pb = a->read_begin1;
-                int32_t p;
-				//uint32_t mapq = -4.343 * log(1 - (double)abs(a->score1 - a->score2)/(double)a->score1); //jenya
-				//mapq = (uint32_t) (mapq + 4.99); //jenya
-				//mapq = mapq < 254 ? mapq : 254; //jenya
-
-				/* (2) FLAG */
-				if (!strand) fprintf(*fileout, "\t16\t");
-				else fprintf(*fileout, "\t0\t");
-
-				/* (3) RNAME */
-				while ((*ref_name != ' ') && (*ref_name != '\n') && (*ref_name != '\t')) fprintf(*fileout,"%c",*ref_name++);
-
-				/* (4) POS */
-				fprintf(*fileout, "\t%d", a->ref_begin1+1);
-
-				/* (5) MAPQ */
-				fprintf(*fileout,"\t%d\t", 255);
-
-				/* (6) CIGAR */
-                if ( a->read_begin1 != 0 ) //output the masked region at beginning of alignment
-                    fprintf(*fileout,"%dS",a->read_begin1);
-                
-                int32_t len_align = 0; //TESTING
-                
-				for (c = 0; c < a->cigarLen; ++c) {
-					int32_t letter = 0xf&*(a->cigar + c);
-					int32_t length = (0xfffffff0&*(a->cigar + c))>>4;
-                    //if ( letter != 2 ) len_align+=length; //TESTING
-					fprintf(*fileout, "%d", length);
-					if (letter == 0) { fprintf(*fileout, "M"); len_align+=length;}
-					else if (letter == 1) { fprintf(*fileout, "I"); len_align+=length;}
-					else fprintf(*fileout, "D");
-				}
-                
-                //int32_t end_mask = readlen-((a->read_end1)-(a->read_begin1)+1)-(a->read_begin1);
-                int32_t end_mask = readlen-(a->read_begin1)-len_align;
-                if ( end_mask > 0 ) //output the masked region at end of alignment
-                    fprintf(*fileout,"%dS",end_mask);
-                
-                //printf("a->read_begin1 = %d\n",a->read_begin1); //TESTING
-                //printf("a->read_end1 = %d\n",a->read_end1); //TESTING
-                //printf("readlen = %d\n", readlen); //TESTING
-                //printf("cigarlen = %d\n",len_align); //TESTING
-                //printf("end_mask = %d\n\n",end_mask); //TESTING
-                //printf("read_end1 - read_begin1 = %d\n",((a->read_end1)-(a->read_begin1)+1)); //TESTING
-                //printf("cigar length = %d\n\n",len_align); //TESTING
-                
-				/* (7) RNEXT, (8) PNEXT, (9) TLEN */
-				fprintf(*fileout, "\t*\t0\t0\t");
-
-				/* (10) SEQ */
-                char* ptr_read_seq = read_seq;
-                while (*ptr_read_seq != '\n') fprintf(*fileout,"%c",(char)to_char[(int)*ptr_read_seq++]);
-                                
-				/* (11) QUAL */
-                fprintf(*fileout,"\t");
-
-                /* reverse-complement strand */
-				if (read_qual && !strand)
-                {
-                   while (*read_qual != '\n') fprintf(*fileout,"%c",*read_qual--);
-                /* forward strand */
-				}else if (read_qual){
-                    while ((*read_qual != '\n') && (*read_qual!='\0')) fprintf(*fileout,"%c",*read_qual++);
-                /* FASTA read */
-				} else fprintf(*fileout, "*");
-
-
-				/* (12) OPTIONAL FIELD: SW alignment score generated by aligner */
-				fprintf(*fileout, "\tAS:i:%d", a->score1);
-
-				/* (13) OPTIONAL FIELD: edit distance to the reference */
-                uint32_t diff = 0;
-                for (c = 0; c < a->cigarLen; ++c) {
-                    int32_t letter = 0xf&*(a->cigar + c);
-                    int32_t length = (0xfffffff0&*(a->cigar + c))>>4;
-                    if (letter == 0) {
-                        for (p = 0; p < length; ++p){
-                            if ( (char)to_char[(int)*(ref_seq + qb)] != (char)*(read_seq + pb) ) ++diff;
-                            ++qb;
-                            ++pb;
-                    }
-                    } else if (letter == 1) {
-                        pb += length;
-                        diff += length;
-                    } else {
-                        qb += length;
-                        diff += length;
-                    }
-                }
-
-				fprintf(*fileout,"\tNM:i:%d\n", diff);
-
-			}
-		}//~sam output
+uint32_t cigar_int_to_len (uint32_t cigar_int)
+{
+	uint32_t res = cigar_int >> 4;
+	return res;
 }
 
 
