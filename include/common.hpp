@@ -88,7 +88,7 @@ extern bool verbose;
 /*! @brief Maximum length of input reads
 	(not limited to this length algorithmically)
 */
-#define READLEN 30000
+#define READLEN 50000
 
 /*! @brief Number of threads to launch */
 extern int32_t numcpu_gv;
