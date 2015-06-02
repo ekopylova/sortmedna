@@ -144,19 +144,62 @@ s_align* ssw_align (const s_profile* prof,
 void align_destroy (s_align** a);
 
 
+/*!	@function		Produce CIGAR 32-bit unsigned integer from CIGAR operation and CIGAR length
+	@param	length		length of CIGAR
+	@param	op_letter	CIGAR operation character ('M', 'I', etc)
+	@return			32-bit unsigned integer, representing encoded CIGAR operation and length
+*/
+static inline uint32_t to_cigar_int (uint32_t length, char op_letter)
+{
+	uint32_t res;
+	uint8_t op_code;
 
-void ssw_write (FILE** fileout,
-			s_align* a,
-			char* read_name,
-            char* read_nt,
-			char* read_qual,
-			char* ref_name,	
-			char* ref_seq,
-			double evalue,
-            int readlen,
-			unsigned int bitscore, 
-			bool strand, // 1: forward aligned ; 0: reverse complement aligned
-			int blast_or_sam);
+	switch (op_letter) {
+		case 'M': /* alignment match (can be a sequence match or mismatch */
+		default:
+			op_code = 0;
+			break;
+		case 'I': /* insertion to the reference */
+			op_code = 1;
+			break;
+		case 'D': /* deletion from the reference */
+			op_code = 2;
+			break;
+		case 'N': /* skipped region from the reference */
+			op_code = 3;
+			break;
+		case 'S': /* soft clipping (clipped sequences present in SEQ) */
+			op_code = 4;
+			break;
+		case 'H': /* hard clipping (clipped sequences NOT present in SEQ) */
+			op_code = 5;
+			break;
+		case 'P': /* padding (silent deletion from padded reference) */
+			op_code = 6;
+			break;
+		case '=': /* sequence match */
+			op_code = 7;
+			break;
+		case 'X': /* sequence mismatch */
+			op_code = 8;
+			break;
+	}
+
+	res = (length << 4) | op_code;
+	return res;
+}
+
+/*!	@function		Extract CIGAR operation character from CIGAR 32-bit unsigned integer
+	@param	cigar_int	32-bit unsigned integer, representing encoded CIGAR operation and length
+	@return			CIGAR operation character ('M', 'I', etc)
+*/
+char cigar_int_to_op (uint32_t cigar_int);
+
+/*!	@function		Extract length of a CIGAR operation from CIGAR 32-bit unsigned integer
+	@param	cigar_int	32-bit unsigned integer, representing encoded CIGAR operation and length
+	@return			length of CIGAR operation
+*/
+uint32_t cigar_int_to_len (uint32_t cigar_int);
 
 
 #ifdef __cplusplus
