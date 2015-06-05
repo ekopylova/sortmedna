@@ -3615,7 +3615,7 @@ paralleltraversal ( char* inputreads,
 
 #ifdef STATS
         uint32_t average_num_passes = total_passes / number_total_read;
-        uint32_t average_num_alignments = total_alignments / number_total_reads;
+        uint32_t average_num_alignments = total_alignments / number_total_read;
         cout << "Average number of passes per read: " << average_num_passes << endl;
         cout << "Average number of alignments per read: " << average_num_alignments << endl;
 #endif
