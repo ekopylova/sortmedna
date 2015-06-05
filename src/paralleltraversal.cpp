@@ -1735,6 +1735,7 @@ paralleltraversal ( char* inputreads,
 #ifdef STATS
   uint32_t total_passes = 0;
   uint32_t total_alignments = 0;
+  uint32_t total_seed_hits = 0;
 #endif
         
   // Loop through all mmap'd read file sections
@@ -2844,6 +2845,9 @@ paralleltraversal ( char* inputreads,
                             for ( int p = 0; p < list.size(); p++ )
                                 cout << "\t\t\t\t\tref: " << vi_read[list[p]].first << "\tread: " << vi_read[list[p]].second << endl;   
 #endif
+#ifdef STATS
+                            total_seed_hits += list.size();
+#endif
                             lcs_ref_start = vi_read[list[0]].first;
                             lcs_que_start = vi_read[list[0]].second;
                                   
@@ -3616,8 +3620,10 @@ paralleltraversal ( char* inputreads,
 #ifdef STATS
         uint32_t average_num_passes = total_passes / number_total_read;
         uint32_t average_num_alignments = total_alignments / number_total_read;
-        cout << "Average number of passes per read: " << average_num_passes << endl;
-        cout << "Average number of alignments per read: " << average_num_alignments << endl;
+        uint32_t average_lis = total_seed_hits / number_total_read;
+        cout << "[STATS] Average number of passes per read: " << average_num_passes << endl;
+        cout << "[STATS] Average number of alignments per read: " << average_num_alignments << endl;
+        cout << "[STATS] Average LIS per read: " << average_lis << endl;
 #endif
         
         eprintf("    Freeing index ... ");
