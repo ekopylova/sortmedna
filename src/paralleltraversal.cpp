@@ -1731,6 +1731,11 @@ paralleltraversal ( char* inputreads,
   // the number of lines to offset at the top of the current
   // file section
   int32_t offset_pair_from_top = 0;
+
+#ifdef STATS
+  uint32_t total_passes = 0;
+  uint32_t total_alignments = 0;
+#endif
         
   // Loop through all mmap'd read file sections
   while ( file_s < file_sections )
@@ -3001,6 +3006,10 @@ paralleltraversal ( char* inputreads,
                                                minimal_score[index_num],
                                                0,
                                                0);
+
+#ifdef STATS
+                            total_alignments++;
+#endif
                             
                             // deallocate memory for profile, no longer needed
                             if ( profile != 0 ) init_destroy(&profile);                                         
@@ -3545,6 +3554,10 @@ paralleltraversal ( char* inputreads,
               }//~for (each window)                
             //~while all three window skip lengths have not been tested, or a match has not been found
             } while ( search );
+
+#ifdef STATS
+            total_passes += pass_n;
+#endif
                         
             // the read didn't align (for --num_alignments [INT] option),
             // output null alignment string
@@ -3599,6 +3612,13 @@ paralleltraversal ( char* inputreads,
         }//for forward and/or reverse strands
         TIME(f);
         eprintf(" done [%.2f sec]\n", (f-s) );
+
+#ifdef STATS
+        uint32_t average_num_passes = total_passes / number_total_read;
+        uint32_t average_num_alignments = total_alignments / number_total_reads;
+        cout << "Average number of passes per read: " << average_num_passes << endl;
+        cout << "Average number of alignments per read: " << average_num_alignments << endl;
+#endif
         
         eprintf("    Freeing index ... ");
         

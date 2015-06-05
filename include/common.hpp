@@ -85,6 +85,9 @@ extern bool verbose;
 // DEBUG: code to store the --best INT alignments
 //#define DEBUG_BEST_N
 
+// STATS: statistics on read alignment
+//#define STATS
+
 /*! @brief Maximum length of input reads
 	(not limited to this length algorithmically)
 */
