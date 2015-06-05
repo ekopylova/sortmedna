@@ -2977,21 +2977,21 @@ paralleltraversal ( char* inputreads,
                             char* tt = reads[readn-1];
                             while (*tt != '\n' ) cout << (char)*tt++;
                             cout << endl;
-                            cout << "read (starting from align_que_start): ";
-                            tt = myread+align_que_start;
-                            while ( *tt != '\n' ) cout << (int)*tt++;
-                            cout << endl;
+                            //cout << "read (starting from align_que_start): ";
+                            //tt = myread+align_que_start;
+                            //while ( *tt != '\n' ) cout << (int)*tt++;
+                            //cout << endl;
                             
                             
                             cout << "ref tag: ";
                             tt = reference_seq[(2*(int)max_seq)];
                             while (*tt != '\n' ) cout << (char)*tt++;
                             cout << endl;
-                            cout << "ref (starting from align_ref_start-head): ";
-                            tt = reference_seq[(2*(int)max_seq)+1]+align_ref_start-head;
-                            while (*tt != '\n' ) cout << (int)*tt++;
-                            cout << endl;
-                            cout << "align_length-head-tail = " << (align_length-head-tail) << endl;
+                            //cout << "ref (starting from align_ref_start-head): ";
+                            //tt = reference_seq[(2*(int)max_seq)+1]+align_ref_start-head;
+                            //while (*tt != '\n' ) cout << (int)*tt++;
+                            //cout << endl;
+                            //cout << "align_length-head-tail = " << (align_length-head-tail) << endl;
                             //}
 #endif                                                     
                             // create profile for read
@@ -3621,9 +3621,9 @@ paralleltraversal ( char* inputreads,
         uint32_t average_num_passes = total_passes / number_total_read;
         uint32_t average_num_alignments = total_alignments / number_total_read;
         uint32_t average_lis = total_seed_hits / number_total_read;
-        cout << "[STATS] Average number of passes per read: " << average_num_passes << endl;
-        cout << "[STATS] Average number of alignments per read: " << average_num_alignments << endl;
-        cout << "[STATS] Average LIS per read: " << average_lis << endl;
+        cout << "    [STATS] Average number of passes per read: " << average_num_passes << endl;
+        cout << "    [STATS] Average number of alignments per read: " << average_num_alignments << endl;
+        cout << "    [STATS] Average LIS per read: " << average_lis << endl;
 #endif
         
         eprintf("    Freeing index ... ");
