@@ -137,7 +137,7 @@ s_align* ssw_align (const s_profile* prof,
 					const uint16_t filters,
 					const int32_t filterd,
 					const int32_t maskLen,
-					const char* read_tag);
+					char* read_tag);
 
 /*!	@function	Release the memory allocated by function ssw_align.
 	@param	a	pointer to the alignment result structure

@@ -831,7 +831,7 @@ s_align* ssw_align (const s_profile* prof,
 					const uint16_t filters,
 					const int32_t filterd,
 					const int32_t maskLen,
-					const char* read_tag) {
+					char* read_tag) {
     
 	alignment_end* bests = 0, *bests_reverse = 0;
 	__m128i* vP = 0;
