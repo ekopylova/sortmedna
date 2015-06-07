@@ -693,8 +693,7 @@ static cigar* banded_sw (const int8_t* ref,
 				op = 'D';	// D
 				break;
 			default:
-				char* tt = read_tag;
-				while (*tt != '\n' ) fprintf(stderr, "%c", (char)*tt++);
+				while (*read_tag != '\n' ) fprintf(stderr, "%c", (char)*read_tag++);
 				fprintf(stderr, "\n");
 				fprintf(stderr, "Trace back error: %d.\n", direction_line[temp1 - 1]);
 				free(direction);
