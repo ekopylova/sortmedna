@@ -2960,8 +2960,7 @@ paralleltraversal ( char* inputreads,
                                   myread[ambiguous_nt[p]] = 4;
                                 }
                               }
-                            }
-                                                          
+                            }                                            
 #ifdef debug_lis
                             //if ( forward_gv ) //TESTING
                             //{
@@ -3009,7 +3008,8 @@ paralleltraversal ( char* inputreads,
                                                2,
                                                minimal_score[index_num],
                                                0,
-                                               0);
+                                               0,
+                                               reads[readn-1]);
 
 #ifdef STATS
                             total_alignments++;

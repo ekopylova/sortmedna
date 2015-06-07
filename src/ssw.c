@@ -575,7 +575,8 @@ static cigar* banded_sw (const int8_t* ref,
 				 const uint32_t weight_gapE,  /* will be used as - */
 				 int32_t band_width,
 				 const int8_t* mat,	/* pointer to the weight matrix */
-				 int32_t n) {
+				 int32_t n,
+				 onst char* read_tag) {
     
 	uint32_t *c = (uint32_t*)malloc(16 * sizeof(uint32_t)), *c1;
 	int32_t i, j, e, f, temp1, temp2, s = 16, s1 = 8, l, max = 0;
@@ -691,7 +692,10 @@ static cigar* banded_sw (const int8_t* ref,
 				temp2 = 2;
 				op = 'D';	// D
 				break;
-			default: 
+			default:
+				char* tt = reads_tag;
+				while (*tt != '\n' ) fprintf(stderr, "%c", (char)*tt++);
+				fprintf(stderr, "\n");
 				fprintf(stderr, "Trace back error: %d.\n", direction_line[temp1 - 1]);
 				free(direction);
 				free(h_c);
@@ -826,7 +830,8 @@ s_align* ssw_align (const s_profile* prof,
 					const uint8_t flag,	//  (from high to low) bit 5: return the best alignment beginning position; 6: if (ref_end1 - ref_begin1 <= filterd) && (read_end1 - read_begin1 <= filterd), return cigar; 7: if max score >= filters, return cigar; 8: always return cigar; if 6 & 7 are both setted, only return cigar when both filter fulfilled
 					const uint16_t filters,
 					const int32_t filterd,
-					const int32_t maskLen) {
+					const int32_t maskLen,
+					const char* read_tag) {
     
 	alignment_end* bests = 0, *bests_reverse = 0;
 	__m128i* vP = 0;
@@ -917,7 +922,17 @@ s_align* ssw_align (const s_profile* prof,
     //printf("prof->read + ->read_begin1 = %s\n",prof->read + r->read_begin1);//TESTING
     
     
-	path = banded_sw(ref + r->ref_begin1, prof->read + r->read_begin1, refLen, readLen, r->score1, weight_gapO, weight_gapE, band_width, prof->mat, prof->n);
+	path = banded_sw(ref + r->ref_begin1,
+					 prof->read + r->read_begin1,
+					 refLen,
+					 readLen,
+					 r->score1,
+					 weight_gapO,
+					 weight_gapE,
+					 band_width,
+					 prof->mat,
+					 prof->n,
+					 read_tag);
 
 
 	if (path == 0) { free(r); r = NULL; } //jenya 
