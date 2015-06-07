@@ -576,7 +576,7 @@ static cigar* banded_sw (const int8_t* ref,
 				 int32_t band_width,
 				 const int8_t* mat,	/* pointer to the weight matrix */
 				 int32_t n,
-				 const char* read_tag) {
+				 char* read_tag) {
     
 	uint32_t *c = (uint32_t*)malloc(16 * sizeof(uint32_t)), *c1;
 	int32_t i, j, e, f, temp1, temp2, s = 16, s1 = 8, l, max = 0;
