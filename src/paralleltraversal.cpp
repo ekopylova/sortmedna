@@ -1,6 +1,6 @@
-/**
- * @file paralleltraversal.cpp
- * @brief File containing functions for index traversal.
+ /**
+ * @brief Parallel traversal of Levenshtein automaton (k=1) and lookup table/mini-burst
+ *        trie index.
  * @parblock
  * SortMeDNA - metagenomic and genomic mapper for second and third generation sequencers
  * @copyright 2013-2015 Bonsai Bioinformatics Research Group
@@ -18,11 +18,14 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with SortMeDNA. If not, see <http://www.gnu.org/licenses/>.
+ * along with SortMeDNA.  If not, see <http://www.gnu.org/licenses/>.
  * @endparblock
  *
- * @authors jenya.kopylov@gmail.com (code, algo), laurent.noe@lifl.fr (code, algo)
- * helene.touzet@lifl.fr (algo), mikael.salson@lifl.fr (algo)
+ * authors: Jenya Kopylova jenya.kopylov@gmail.com
+ *          Laurent Noé    laurent.noe@lifl.fr
+ *          Mikaël Salson  mikael.salson@lifl.fr
+ *          Rob Knight     robknight@ucsd.edu
+ *          Hélène Touzet  helene.touzet@lifl.fr
  */
 
 #include "../include/paralleltraversal.hpp"
@@ -1182,11 +1185,12 @@ load_index( char* ptr_dbindex,
  *
  * FUNCTION   : find_lis()
  * PARAMETERS : deque<mypair > &a, vector<int> &b
- * PURPOSE  : given a list of matching positions on the read, find the longest strictly increasing
- *            subsequence, O(n log k)
- * INPUT  : a list of matching positions on the read which fall within a range of the read's
- *            length on the genome, and a vector<int> &b to store the starting positions of each longest
- *            subsequence
+ * PURPOSE    : given a list of matching positions on the read, find the longest strictly increasing
+ *              subsequence, O(n log k)
+ * SOURCE     : see http://www.algorithmist.com/index.php/Longest_Increasing_Subsequence.cpp
+ * INPUT      : a list of matching positions on the read which fall within a range of the read's
+ *              length on the genome, and a vector<int> &b to store the starting positions of each longest
+ *              subsequence
  * OUTPUT : N/A
  *
  **************************************************************************************************************/
@@ -1201,7 +1205,7 @@ void find_lis( deque<pair<uint32_t, uint32_t> > &a, vector<uint32_t> &b, uint32_
     
   for (uint32_t i = 1; i < a.size(); i++)
   {
-    // If next element a[i] is greater than last element of current longest subsequence a[b.back()], just push it at back of "b" and continue
+    // If next element a[i] is greater than last element of current longest subsequence a[b.back()], push it at back of "b" and continue
     if (a[b.back()].second < a[i].second)
     {
       p[i] = b.back();

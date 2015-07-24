@@ -21,8 +21,11 @@
  * along with SortMeDNA.  If not, see <http://www.gnu.org/licenses/>.
  * @endparblock
  *
- * contact: jenya.kopylov@gmail.com (code, algo), laurent.noe@lifl.fr (code, algo)
- * helene.touzet@lifl.fr (algo), mikael.salson@lifl.fr (algo)
+ * authors: Jenya Kopylova jenya.kopylov@gmail.com
+ *          Laurent Noé    laurent.noe@lifl.fr
+ *          Mikaël Salson  mikael.salson@lifl.fr
+ *          Rob Knight     robknight@ucsd.edu
+ *          Hélène Touzet  helene.touzet@lifl.fr
  */
 
 #include "../include/paralleltraversal.hpp"

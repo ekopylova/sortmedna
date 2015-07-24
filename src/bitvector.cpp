@@ -1,4 +1,6 @@
-/*
+ /**
+ * @brief Bitvector manipulation for read and mini-burst trie traversal.
+ * @parblock
  * SortMeDNA - metagenomic and genomic mapper for second and third generation sequencers
  * @copyright 2013-2015 Bonsai Bioinformatics Research Group
  * 2015 Knight Lab, Department of Pediatrics, UCSD, La Jolla
@@ -16,10 +18,13 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with SortMeDNA.  If not, see <http://www.gnu.org/licenses/>.
+ * @endparblock
  *
- * file: bitvector.cpp
- * contact: jenya.kopylov@gmail.com, laurent.noe@lifl.fr, helene.touzet@lifl.fr
- *
+ * authors: Jenya Kopylova jenya.kopylov@gmail.com
+ *          Laurent Noé    laurent.noe@lifl.fr
+ *          Mikaël Salson  mikael.salson@lifl.fr
+ *          Rob Knight     robknight@ucsd.edu
+ *          Hélène Touzet  helene.touzet@lifl.fr
  */
 
 /** @file */ 

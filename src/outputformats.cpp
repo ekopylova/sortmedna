@@ -1,6 +1,5 @@
-/**
- * @file outputformats.cpp
- * @brief Functions for reporting Blast-like, SAM and FASTA outputs
+ /**
+ * @brief Various output formats.
  * @parblock
  * SortMeDNA - metagenomic and genomic mapper for second and third generation sequencers
  * @copyright 2013-2015 Bonsai Bioinformatics Research Group
@@ -18,11 +17,14 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with SortMeRNA. If not, see <http://www.gnu.org/licenses/>.
+ * along with SortMeDNA.  If not, see <http://www.gnu.org/licenses/>.
  * @endparblock
  *
- * @authors jenya.kopylov@gmail.com (code, algo), laurent.noe@lifl.fr (code, algo)
- * helene.touzet@lifl.fr (algo), mikael.salson@lifl.fr (algo)
+ * authors: Jenya Kopylova jenya.kopylov@gmail.com
+ *          Laurent Noé    laurent.noe@lifl.fr
+ *          Mikaël Salson  mikael.salson@lifl.fr
+ *          Rob Knight     robknight@ucsd.edu
+ *          Hélène Touzet  helene.touzet@lifl.fr
  */
 
 #include "../include/outputformats.hpp"

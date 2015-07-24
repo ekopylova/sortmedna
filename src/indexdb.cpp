@@ -1,26 +1,30 @@
-/*
+ /**
+ * @brief Index reference database using lookup table and mini-burst tries.
+ * @parblock
  * SortMeDNA - metagenomic and genomic mapper for second and third generation sequencers
  * @copyright 2013-2015 Bonsai Bioinformatics Research Group
  * 2015 Knight Lab, Department of Pediatrics, UCSD, La Jolla
  * GNU GENERAL PUBLIC LICENSE
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * SortMeDNA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * SortMeDNA is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with SortMeDNA. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with SortMeDNA.  If not, see <http://www.gnu.org/licenses/>.
+ * @endparblock
  *
- * indexdb.cpp 
- * contact: jenya.kopylov@gmail.com (code, algo), laurent.noe@lifl.fr (code, algo)
- * helene.touzet@lifl.fr (algo), mikael.salson@lifl.fr (algo)
- *
+ * authors: Jenya Kopylova jenya.kopylov@gmail.com
+ *          Laurent Noé    laurent.noe@lifl.fr
+ *          Mikaël Salson  mikael.salson@lifl.fr
+ *          Rob Knight     robknight@ucsd.edu
+ *          Hélène Touzet  helene.touzet@lifl.fr
  */
 
 /** @file */ 
