@@ -1,27 +1,30 @@
-/*
- * SortMeRNA - next-generation reads filter for metatranscriptomic or total RNA
- * Copyright (C) 2012-2014 Bonsai Bioinformatics Research Group
+ /**
+ * @brief Header file for outputformats.cpp
+ * @parblock
+ * SortMeDNA - metagenomic and genomic mapper for second and third generation sequencers
+ * @copyright 2013-2015 Bonsai Bioinformatics Research Group
+ * 2015 Knight Lab, Department of Pediatrics, UCSD, La Jolla
+ * GNU GENERAL PUBLIC LICENSE
  *
- * OTU-picking extensions developed in the Knight Lab, BioFrontiers Institute,
- * University of Colorado at Boulder, Boulder, CO
- *
- * This file is part of SortMeRNA.
- *
- * SortMeRNA is free software: you can redistribute it and/or modify
+ * SortMeDNA is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * SortMeRNA is distributed in the hope that it will be useful,
+ * SortMeDNA is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+ * along with SortMeDNA.  If not, see <http://www.gnu.org/licenses/>.
+ * @endparblock
  *
- * contact: jenya.kopylov@gmail.com, laurent.noe@lifl.fr, helene.touzet@lifl.fr
- *
+ * authors: Jenya Kopylova jenya.kopylov@gmail.com
+ *          Laurent Noé    laurent.noe@lifl.fr
+ *          Mikaël Salson  mikael.salson@lifl.fr
+ *          Rob Knight     robknight@ucsd.edu
+ *          Hélène Touzet  helene.touzet@lifl.fr
  */
 
 /** @file outputformats.hpp */ 

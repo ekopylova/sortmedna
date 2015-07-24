@@ -166,7 +166,7 @@ void printlist()
   printf("     %s-v%s                %sBOOL%s            verbose                                                        %soff%s\n\n\n","\033[1m","\033[0m","\033[4m","\033[0m","\033[4m","\033[0m");
   printf("   [ADVANCED OPTIONS] (see SortMeDNA user manual for more details): \n");
   printf("    %s--passes%s           %sINT,INT,INT%s     three intervals at which to place the seed on the read         %sL,L/2,3%s\n","\033[1m","\033[0m","\033[4m","\033[0m","\033[4m","\033[0m");
-  printf("                                         (L is the seed length set in ./indexdb_rna)\n");
+  printf("                                         (L is the seed length set in ./indexdb_dna)\n");
   printf("    %s--edges%s            %sINT%s             number (or percent if INT followed by %% sign) of               %s4%s\n","\033[1m","\033[0m","\033[4m","\033[0m","\033[4m","\033[0m");
   printf("                                         nucleotides to add to each edge of the read\n");
   printf("                                         prior to SW local alignment \n");
@@ -179,7 +179,7 @@ void printlist()
   printf("    %s--pid%s              %sBOOL%s            add pid to output file names                                   %soff%s\n\n\n","\033[1m","\033[0m","\033[4m","\033[0m","\033[4m","\033[0m");
   printf("   [HELP]:\n");
   printf("     %s-h%s                %sBOOL%s            help\n","\033[1m","\033[0m","\033[4m","\033[0m");
-  printf("     %s--version%s         %sBOOL%s            SortMeRNA version number\n\n\n","\033[1m","\033[0m","\033[4m","\033[0m");
+  printf("     %s--version%s         %sBOOL%s            SortMeDNA version number\n\n\n","\033[1m","\033[0m","\033[4m","\033[0m");
   exit(EXIT_FAILURE);
 }//~printlist()
 
@@ -226,7 +226,7 @@ main(int argc,
   bool exit_early = false;
   // vector of (FASTA file, index name) pairs for loading index
   vector< pair<string,string> > myfiles;
-  // skip lengths for pass 1, pass 2 and pass 3 in first step of sortmerna 
+  // skip lengths for pass 1, pass 2 and pass 3 in first step of sortmedna
   // pipeline for each reference database searched
   vector< vector<uint32_t> > skiplengths;
     
@@ -253,7 +253,7 @@ main(int argc,
     verbose = true;
     welcome();
     fprintf(stderr,"  For help or more information on usage, type "
-                   "`./sortmerna %s-h%s'\n\n","\033[1m","\033[0m");
+                   "`./sortmedna %s-h%s'\n\n","\033[1m","\033[0m");
     exit(EXIT_FAILURE);
   }
     
@@ -287,7 +287,7 @@ main(int argc,
               size_t filesize = ftell(file);
 
               // set exit BOOL to exit program after outputting
-              // empty files, sortmerna will not execute after
+              // empty files, sortmedna will not execute after
               // that call (in paralleltraversal.cpp)
               if ( !filesize ) exit_early = true;
               // reset file pointer to start of file
@@ -977,7 +977,7 @@ main(int argc,
         // the version number
         else if ( strcmp ( myoption, "version"  ) == 0 )
         {
-          fprintf(stderr,"\n  SortMeRNA version %s\n\n",version_num);
+          fprintf(stderr,"\n  SortMeDNA version %s\n\n",version_num);
           exit(EXIT_SUCCESS);
         }
         else

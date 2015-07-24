@@ -1,8 +1,10 @@
-/*
+ /**
+ * @brief Header file defining variables used in common by various .cpp files.
+ * @parblock
  * SortMeDNA - metagenomic and genomic mapper for second and third generation sequencers
- * Copyright (C) 2015 Bonsai Bioinformatics Research Group
- *
- * This file is part of SortMeDNA.
+ * @copyright 2013-2015 Bonsai Bioinformatics Research Group
+ * 2015 Knight Lab, Department of Pediatrics, UCSD, La Jolla
+ * GNU GENERAL PUBLIC LICENSE
  *
  * SortMeDNA is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -16,10 +18,13 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with SortMeDNA.  If not, see <http://www.gnu.org/licenses/>.
+ * @endparblock
  *
- * @authors jenya.kopylov@gmail.com (code, algo), laurent.noe@lifl.fr (code, algo)
- * helene.touzet@lifl.fr (algo), mikael.salson@lifl.fr (algo)
- *
+ * authors: Jenya Kopylova jenya.kopylov@gmail.com
+ *          Laurent Noé    laurent.noe@lifl.fr
+ *          Mikaël Salson  mikael.salson@lifl.fr
+ *          Rob Knight     robknight@ucsd.edu
+ *          Hélène Touzet  helene.touzet@lifl.fr
  */
 
  /** @file common.hpp */
