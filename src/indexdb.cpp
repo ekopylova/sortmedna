@@ -895,6 +895,7 @@ void welcome()
   printf("  Contact:     Evguenia Kopylova, jenya.kopylov@gmail.com \n");
   printf("               Laurent Noé, laurent.noe@lifl.fr\n");
   printf("               Mikaël Salson, mikael.salson@lifl.fr\n");
+  printf("               Rob Knight, robknight@ucsd.edu\n");
   printf("               Hélène Touzet, helene.touzet@lifl.fr\n\n");
 }
 
