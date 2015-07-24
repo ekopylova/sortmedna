@@ -37,7 +37,7 @@
 
 /*
  * Important: parts of this file have been modified by Evguenia Kopylova
- *            to work with SortMeRNA. Please download the code published
+ *            to work with SortMeDNA. Please download the code published
  *            with the SSW library for the original version.
  *            updates: July 10, 2013 - June 01, 2015
  */
