@@ -115,6 +115,6 @@ Citation
 --------
 
 If you use SortMeDNA, please cite:
-Kopylova E., Noé L., Salson, M., Knight, R. and Touzet H., "Universal read mapping of genomic and metagenoimc sequences with SortMeDNA" (2015) (manuscript under submission).
+Kopylova E., Noé L., Salson, M., Knight, R. and Touzet H., "Universal read mapping of genomic and metagenomic sequences with SortMeDNA" (2015) (submitted).
 
 
