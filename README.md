@@ -111,10 +111,5 @@ sudo port install gcc48
 After the installation, you should find the compiler installed in /opt/local/bin/gcc-mp-4.8 and /opt/local/bin/g++-mp-4.8 .
 
 
-Citation
---------
-
-If you use SortMeDNA, please cite:
-Kopylova E., Noé L., Salson, M., Knight, R. and Touzet H., "Universal read mapping of genomic and metagenomic sequences with SortMeDNA" (2015) (submitted).
 
 
